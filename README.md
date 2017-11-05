@@ -1,7 +1,7 @@
 ## Synopsis
 
 A webserver that maintains tcp connection(s) to tcp server(s).
-It forwards client request to a tcp server via tcp connection, and forwards server response to the client
+It forwards client request to a tcp server via tcp connection, and forwards server response back to the client.
 
 ## Install
 
