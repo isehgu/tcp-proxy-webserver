@@ -29,14 +29,30 @@ app.listen(PORT, (req,res)=> {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
-    client.write(`Request ${++request} : Hello World`);
-    setTimeout(() => {
-        // TBD -- how to ensure the return data is for this request
 
-        if (dataStore.length > 0) res.send(dataStore.pop());
-        else res.send('No response yet');
-    }, 100);
+
+// This is tested with a response, and without a response from server
+// by modifying timeout to a very small number.
+// Error is correctly thrown.
+function getServerResponse(timeout) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (dataStore.length > 0) {
+                resolve(dataStore.pop());
+            } else {
+                reject(new Error('No response from server received for your request'));
+            }
+        }, timeout);
+    }); // End of promise
+}
+
+app.get('/', (req, res, next) => {
+    client.write(`Request ${++request} : Hello World`);
+    getServerResponse(100)
+        .then(response => {
+            res.send(response);
+        })
+        .catch(next);
 });
 // // static middleware
 // app.use(express.static(path.join(__dirname, 'node_modules')));
